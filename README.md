@@ -1,40 +1,113 @@
+<div align="center">
+
 # DualRouteGS
 
-**Coordinated State and Gaussian Routing for Single-View Transmissive Reconstruction**
+### Coordinated State and Gaussian Routing for Single-View Transmissive Reconstruction
 
-A trainable research implementation based on the supplied DualRouteGS manuscript. The network, modules, configurations, and execution interfaces use the DualRouteGS name and are organized around **PSR + IGA**. The input is **one calibrated scalar X-ray transmission projection and its acquisition geometry**. The output is a three-dimensional Gaussian attenuation field in global coordinates, which supports novel-view projection rendering and volume reconstruction.
+**Single calibrated X-ray projection → explicit 3D Gaussian attenuation field**
 
+![Research Code](https://img.shields.io/badge/status-research%20code-informational)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.5%2B-orange)
+![Input](https://img.shields.io/badge/input-single--view%20X--ray-lightgrey)
+![Representation](https://img.shields.io/badge/representation-3D%20Gaussians-success)
 
-## 1. Components and Entry Points
+</div>
 
-| Component | Entry point |
-| --- | --- |
-| DualRoute network, geometry encoding, AdaLN, and 2D RoPE | `dualroutegs/models/dualroute.py` |
-| Phase reliability, memory-orthogonal innovation, and amplitude/subspace/query selection | `dualroutegs/models/psr.py` |
-| Order-preserving sparse scanning and associative scanning for training | `dualroutegs/models/scan.py` |
-| Ordered candidate thresholds, minimum capacity, and differentiable existence gates | `dualroutegs/models/iga.py` |
-| Attenuation Gaussian parameters and covariance | `dualroutegs/gaussians.py` |
-| Transmission rendering: CUDA backend and analytic PyTorch reference | `dualroutegs/rendering/` |
-| Forward diffusion and DDIM driven by rendered predictions | `dualroutegs/diffusion.py` |
-| Data loading and patient/scene split checks | `dualroutegs/data/dataset.py` |
-| Training, inference, and evaluation | `train.py`, `infer.py`, `evaluate.py` |
+---
 
-See [DATA.md](docs/DATA.md) for the data format.
+## Overview
 
-## 2. Installation
+**DualRouteGS** is a research implementation for **single-view transmissive reconstruction**. Given one calibrated scalar X-ray transmission projection and its acquisition geometry, the model reconstructs an explicit three-dimensional Gaussian attenuation field in global coordinates. The recovered representation supports both **novel-view transmission rendering** and **volumetric reconstruction**.
 
-Python 3.10 or later is required. Validation used Python 3.12 and PyTorch 2.5.1 CPU. Use a dedicated virtual environment.
+The implementation is organized around two complementary mechanisms:
+
+- **Phase-Aware State Routing (PSR)** — adapts feature-space state computation through phase reliability, memory-orthogonal innovation, write-amplitude control, active-subspace selection, and global retrieval.
+- **Innovation-Guided Gaussian Allocation (IGA)** — adapts explicit representation capacity through ordered candidate thresholds, minimum-capacity constraints, and differentiable Gaussian-existence gates.
+
+The repository provides the complete training, inference, rendering, evaluation, ablation, and statistical-analysis interfaces used by the project.
+
+---
+
+## Method at a Glance
+
+```mermaid
+flowchart LR
+    A[Single calibrated X-ray projection] --> C[DualRouteGS]
+    B[Acquisition geometry] --> C
+
+    C --> D[Geometry-conditioned feature processing]
+    D --> E[Phase-Aware State Routing · PSR]
+    E --> F[State-space feature representation]
+
+    F --> G[Innovation-Guided Gaussian Allocation · IGA]
+    G --> H[Explicit attenuation Gaussians]
+
+    H --> I[Transmission renderer]
+    I --> J[Novel-view projections]
+    I --> K[3D attenuation volume]
+
+    subgraph PSR[Feature-space resource routing]
+        E1[Phase reliability]
+        E2[Memory-orthogonal innovation]
+        E3[Write amplitude]
+        E4[Active state subspaces]
+        E5[Global retrieval]
+    end
+
+    subgraph IGA[Representation-space resource allocation]
+        G1[Ordered candidate thresholds]
+        G2[Minimum local capacity]
+        G3[Differentiable existence gates]
+    end
+```
+
+### Design principle
+
+DualRouteGS separates **where computation should be spent** from **where explicit Gaussian capacity should be allocated**. PSR operates in the learned state space, while IGA controls the density of the final explicit representation. This separation keeps the implementation modular and makes the two resource-allocation mechanisms independently testable through ablations.
+
+---
+
+## Core Components
+
+| Module | Role | Entry point |
+| --- | --- | --- |
+| **DualRoute backbone** | Geometry encoding, AdaLN, and 2D RoPE | `dualroutegs/models/dualroute.py` |
+| **PSR** | Phase reliability, memory-orthogonal innovation, amplitude/subspace/query selection | `dualroutegs/models/psr.py` |
+| **Sparse scan** | Order-preserving sparse scanning and associative training scan | `dualroutegs/models/scan.py` |
+| **IGA** | Ordered candidate thresholds, minimum capacity, differentiable existence gates | `dualroutegs/models/iga.py` |
+| **Gaussian representation** | Attenuation Gaussian parameters and covariance construction | `dualroutegs/gaussians.py` |
+| **Transmission rendering** | CUDA backend and analytic PyTorch reference implementation | `dualroutegs/rendering/` |
+| **Diffusion** | Forward diffusion and DDIM driven by rendered predictions | `dualroutegs/diffusion.py` |
+| **Data** | Data loading and patient/scene split checks | `dualroutegs/data/dataset.py` |
+| **Execution** | Training, inference, and evaluation | `train.py`, `infer.py`, `evaluate.py` |
+
+Data conventions are documented in [`docs/DATA.md`](docs/DATA.md).
+
+---
+
+## Installation
+
+Python **3.10+** is required. The reference validation environment used Python 3.12 and PyTorch 2.5.1 on CPU.
+
+### 1. Create an isolated environment
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-# CPU validation environment; use a compatible CUDA build of PyTorch for GPU training.
+```
+
+### 2. Install PyTorch and DualRouteGS
+
+For CPU-side validation:
+
+```bash
 python -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
 python -m pip install -e .
 ```
 
-For an NVIDIA GPU, install a CUDA-enabled PyTorch build and a compatible CUDA toolkit with nvcc, then compile the bundled backend:
+For GPU training, install a CUDA-enabled PyTorch build and a compatible CUDA toolkit with `nvcc`, then compile the bundled rendering backend:
 
 ```bash
 python -m pip install ninja
@@ -42,11 +115,13 @@ python scripts/install_backend.py
 python -m unittest discover -s tests -v
 ```
 
-The CUDA installation command uses `--no-build-isolation` to access PyTorch from the current environment. No additional model weights are required. `third_party/ray_gaussian` includes the necessary C++/CUDA source files and GLM headers.
+The CUDA installation uses `--no-build-isolation` so that the active PyTorch installation is visible during compilation. No additional model weights are required. The repository includes the required C++/CUDA source files and GLM headers under `third_party/ray_gaussian`.
 
-## 3. Minimal End-to-End Example
+---
 
-Run the following commands from the project root:
+## Quick Start
+
+A minimal end-to-end smoke test can be executed entirely from the project root:
 
 ```bash
 python -m unittest discover -s tests -v
@@ -58,66 +133,224 @@ python infer.py --checkpoint runs/smoke/last.pt \
   --device cpu --volume-resolution 16 --output outputs/demo
 ```
 
-This workflow performs only three optimizer updates to check the execution pipeline. The synthetic examples and resulting reconstructions **must not be used as manuscript experiments or evidence of reconstruction quality**.
+> **Important:** the smoke configuration performs only three optimizer updates. The generated synthetic examples are intended solely to verify execution and **must not be interpreted as manuscript experiments or reconstruction-quality evidence**.
 
-Exported files:
+### Inference outputs
 
-| File | Contents |
+| File | Description |
 | --- | --- |
 | `gaussians.npz` | Hard-selected `means / scales / rotations / kappa` |
-| `canonical_projection.npy` | Projection at the canonical virtual target view, restored to the input projection scale |
-| `condition_projection.npy` | Reprojection under the input camera geometry |
-| `volume.npy` | Attenuation field at the requested resolution, with xyz array axes |
+| `canonical_projection.npy` | Projection at the canonical virtual target view, restored to the input scale |
+| `condition_projection.npy` | Reprojection under the measured input-camera geometry |
+| `volume.npy` | Reconstructed attenuation field at the requested resolution, using xyz array axes |
 | `metadata.json` | Coordinate scale, random seed, sampling steps, and measured routing statistics |
 
-## 4. Training with Your Data
+---
 
-Prepare a manifest following [DATA.md](docs/DATA.md). Existing scanner scene directories can be converted with:
+## Training on Calibrated Data
+
+Prepare a manifest following [`docs/DATA.md`](docs/DATA.md). Existing scanner directories can be converted with:
 
 ```bash
-python scripts/convert_scanner.py --catalog data/catalog.json --output data/calibrated
+python scripts/convert_scanner.py \
+  --catalog data/catalog.json \
+  --output data/calibrated
+```
+
+Train the full configuration with:
+
+```bash
 python train.py --config configs/paper.yaml \
-  --manifest data/calibrated/manifest.json --device cuda --output runs/full
+  --manifest data/calibrated/manifest.json \
+  --device cuda \
+  --output runs/full
 ```
 
-`paper.yaml` retains the manuscript's explicitly stated settings: eight layers, width 512, eight retrieval heads, eight state subspaces, two base subspaces, a 512 x 512 anchor grid, up to four Gaussians per anchor, 80K optimizer updates, four-step gradient accumulation, and the stated loss weights. Details omitted from the manuscript are specified as explicit configuration choices. The configuration name does not imply that the reported parameter count or performance has been reproduced exactly.
+### Reference configuration
 
-Use `development.yaml` to debug at smaller image resolutions and anchor counts with the reference renderer. Its computational cost scales with the number of rays multiplied by the number of Gaussians; **use the CUDA backend for the 512 x 512 anchor configuration**. The CUDA adapter currently supports centered cone-beam cameras. The reference backend also supports checks with parallel beams and offset detectors.
+`configs/paper.yaml` retains the manuscript-explicit settings implemented in this repository:
 
-Resume training with:
+| Setting | Value |
+| --- | ---: |
+| Network layers | 8 |
+| Hidden width | 512 |
+| Retrieval heads | 8 |
+| State subspaces | 8 |
+| Base subspaces | 2 |
+| Anchor grid | 512 × 512 |
+| Maximum Gaussians per anchor | 4 |
+| Optimizer updates | 80K |
+| Gradient accumulation | 4 steps |
+
+Loss weights follow the stated configuration. Implementation details that are not specified by the manuscript are exposed as explicit configuration choices rather than being hidden in code.
+
+> **Reproducibility note:** the name `paper.yaml` indicates the manuscript-oriented configuration, but does **not** by itself imply exact reproduction of every reported parameter count or performance value.
+
+For smaller-scale debugging, use `configs/development.yaml`. The reference renderer scales with the number of rays multiplied by the number of Gaussians; therefore, the **CUDA backend is recommended for the 512 × 512 anchor configuration**. The CUDA adapter currently supports centered cone-beam cameras, while the analytic reference backend can additionally be used for parallel-beam and offset-detector checks.
+
+### Resume training
 
 ```bash
-python train.py --resume runs/full/last.pt --device cuda --output runs/full
+python train.py \
+  --resume runs/full/last.pt \
+  --device cuda \
+  --output runs/full
 ```
 
-Training logs are stored in `train.jsonl`. Checkpoints include the network, optimizer, actual configuration, iteration count, and major RNG states. The data iterator is recreated when training resumes, so sample-by-sample bitwise equivalence to uninterrupted training is not guaranteed. Use the separate validation command below for model selection; the training script does not automatically inspect the test set.
+Training logs are written to `train.jsonl`. Checkpoints store the network, optimizer, instantiated configuration, iteration count, and major RNG states. Because the data iterator is recreated when training resumes, resumed training is not guaranteed to be sample-by-sample bitwise identical to an uninterrupted run.
 
-## 5. Single-View Inference and Novel-View Rendering
+Model selection should be performed on the validation split. The training script does not automatically inspect the test set.
+
+---
+
+## Single-View Inference
+
+DualRouteGS accepts **exactly one measured transmission projection** together with its camera geometry:
 
 ```bash
-python infer.py --checkpoint runs/full/last.pt \
-  --input data/input_projection.npy --camera data/input_camera.json \
-  --device cuda --volume-resolution 256 --output outputs/case001
-python scripts/render_views.py --gaussians outputs/case001/gaussians.npz \
-  --geometry data/novel_geometry.json --size 256 --backend cuda \
-  --device cuda --output outputs/case001/novel_views.npz
+python infer.py \
+  --checkpoint runs/full/last.pt \
+  --input data/input_projection.npy \
+  --camera data/input_camera.json \
+  --device cuda \
+  --volume-resolution 256 \
+  --output outputs/case001
 ```
 
-`infer.py` accepts exactly one measured projection. The canonical target canvas is initialized from noise; the interface does not accept additional measured target images.
+The canonical target canvas is initialized from noise; the inference interface does not accept additional measured target images.
 
-## 6. Validation, Testing, and Ablations
+---
+
+## Novel-View Transmission Rendering
+
+The reconstructed Gaussian field can be rendered from new acquisition geometries:
+
+```bash
+python scripts/render_views.py \
+  --gaussians outputs/case001/gaussians.npz \
+  --geometry data/novel_geometry.json \
+  --size 256 \
+  --backend cuda \
+  --device cuda \
+  --output outputs/case001/novel_views.npz
+```
+
+This decouples reconstruction from downstream projection synthesis: the network predicts an explicit 3D attenuation representation, and the renderer evaluates that representation under a requested geometry.
+
+---
+
+## Evaluation Protocol
+
+Install the optional metric dependencies:
 
 ```bash
 python -m pip install -e '.[metrics]'
-python evaluate.py --checkpoint runs/full/last.pt --split val --volume --device cuda
-# Run test evaluation only after fixing the model and hyperparameters.
-python evaluate.py --checkpoint runs/full/last.pt --split test --volume --device cuda
 ```
 
-Projection metrics include PSNR, SSIM, and RMSE. `--lpips` enables optional LPIPS evaluation, whose dependency loads the required evaluation-network weights. Volume metrics include PSNR, 3D SSIM, and RMSE. Results are aggregated over target views, scenes, and independent patients/objects, with group-level bootstrap confidence intervals. `scripts/paired_statistics.py` provides paired Wilcoxon tests with Holm correction. `scripts/evaluate_regions.py` provides region PSNR/MAE, Dice, boundary-voxel NSD, and clDice. Segmentation masks come from an external fixed evaluation workflow and are not reconstruction inputs.
+Evaluate the validation split first:
 
-`configs/ablations/` includes static attention, static state routing, PSR only, static state routing with IGA, and configurations that disable phase, amplitude, subspace, or query routing. Train each configuration separately using `train.py --config ...`, then evaluate all variants on identical data splits.
+```bash
+python evaluate.py \
+  --checkpoint runs/full/last.pt \
+  --split val \
+  --volume \
+  --device cuda
+```
 
-## 7. Source Attribution
+Run the test split only after fixing the model and hyperparameters:
 
-Dependency sources, pinned revisions, modification scopes, and original licenses are documented in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and `third_party/licenses/`. The main project is organized independently, while the dependencies' copyright notices and required attribution are retained.
+```bash
+python evaluate.py \
+  --checkpoint runs/full/last.pt \
+  --split test \
+  --volume \
+  --device cuda
+```
+
+### Metrics
+
+**Projection domain**
+- PSNR
+- SSIM
+- RMSE
+- LPIPS via `--lpips` (optional)
+
+**Volume domain**
+- PSNR
+- 3D SSIM
+- RMSE
+
+**Region / structure analysis**
+- Region PSNR and MAE
+- Dice
+- Boundary-voxel NSD
+- clDice
+
+Results are aggregated over target views, scenes, and independent patients/objects, with group-level bootstrap confidence intervals. Paired statistical testing is available through:
+
+```bash
+python scripts/paired_statistics.py
+```
+
+The provided procedure uses paired Wilcoxon tests with Holm correction. Region-based evaluation is available through:
+
+```bash
+python scripts/evaluate_regions.py
+```
+
+Segmentation masks are supplied by an external, fixed evaluation workflow and are **not** used as reconstruction inputs.
+
+---
+
+## Ablation Studies
+
+Ablation configurations are provided under `configs/ablations/` and include:
+
+- static attention;
+- static state routing;
+- PSR only;
+- static state routing with IGA;
+- phase routing disabled;
+- amplitude routing disabled;
+- state-subspace routing disabled;
+- query routing disabled.
+
+Each ablation should be trained independently and evaluated under the same data split and evaluation protocol:
+
+```bash
+python train.py --config configs/ablations/<variant>.yaml ...
+python evaluate.py --checkpoint <variant_checkpoint> --split val --volume --device cuda
+```
+
+This design isolates the contribution of the state-routing and Gaussian-allocation mechanisms without changing the external training/evaluation interface.
+
+---
+
+## Reproducibility and Scope
+
+This repository is intended as a **transparent research implementation**, not as a claim that every manuscript number can be reproduced solely by running the default configuration.
+
+The implementation explicitly distinguishes between:
+
+1. **settings stated by the manuscript**, which are retained in the corresponding configuration;
+2. **engineering choices required for execution**, which are exposed in configuration files;
+3. **smoke-test settings**, which verify software correctness only;
+4. **validation/test evaluation**, which should remain separated during model development.
+
+For large anchor counts and high-resolution rendering, the CUDA backend is the intended execution path. The analytic PyTorch renderer remains useful as a reference implementation and for geometry checks.
+
+---
+
+## Source Attribution
+
+Dependency sources, pinned revisions, modification scopes, and original licenses are documented in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) and `third_party/licenses/`.
+
+The main DualRouteGS project is organized independently, while third-party copyright notices and required attribution are retained.
+
+---
+
+<div align="center">
+
+**DualRouteGS · Single-View Transmissive Reconstruction with Coordinated State and Gaussian Routing**
+
+</div>
