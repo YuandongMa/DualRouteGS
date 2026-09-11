@@ -348,9 +348,3 @@ Dependency sources, pinned revisions, modification scopes, and original licenses
 The main DualRouteGS project is organized independently, while third-party copyright notices and required attribution are retained.
 
 ---
-
-<div align="center">
-
-**DualRouteGS · Single-View Transmissive Reconstruction with Coordinated State and Gaussian Routing**
-
-</div>
