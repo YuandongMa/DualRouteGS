@@ -19,7 +19,7 @@ A trainable research implementation based on the supplied DualRouteGS manuscript
 | Data loading and patient/scene split checks | `dualroutegs/data/dataset.py` |
 | Training, inference, and evaluation | `train.py`, `infer.py`, `evaluate.py` |
 
-See [IMPLEMENTATION.md](docs/IMPLEMENTATION.md) for the equation-to-code mapping and implementation assumptions, and [DATA.md](docs/DATA.md) for the data format.
+See [DATA.md](docs/DATA.md) for the data format.
 
 ## 2. Installation
 
