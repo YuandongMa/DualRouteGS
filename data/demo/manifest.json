@@ -1,0 +1,57 @@
+{
+  "format_version": 1,
+  "description": "Synthetic validation phantoms only",
+  "scenes": [
+    {
+      "id": "phantom_train",
+      "group_id": "phantom_train",
+      "domain": "synthetic_phantom",
+      "split": "train",
+      "projections": "phantom_train.npz",
+      "geometry": "phantom_train_geometry.json",
+      "volume": "phantom_train_volume.npy",
+      "input_index": 0,
+      "target_indices": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "phantom_val",
+      "group_id": "phantom_val",
+      "domain": "synthetic_phantom",
+      "split": "val",
+      "projections": "phantom_val.npz",
+      "geometry": "phantom_val_geometry.json",
+      "volume": "phantom_val_volume.npy",
+      "input_index": 0,
+      "target_indices": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "id": "phantom_test",
+      "group_id": "phantom_test",
+      "domain": "synthetic_phantom",
+      "split": "test",
+      "projections": "phantom_test.npz",
+      "geometry": "phantom_test_geometry.json",
+      "volume": "phantom_test_volume.npy",
+      "input_index": 0,
+      "target_indices": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

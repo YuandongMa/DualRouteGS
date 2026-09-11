@@ -1,0 +1,30 @@
+[
+  {
+    "interaction": "attention",
+    "iga": false,
+    "finite": true,
+    "bank": 256,
+    "active": 256
+  },
+  {
+    "interaction": "static_state",
+    "iga": false,
+    "finite": true,
+    "bank": 256,
+    "active": 256
+  },
+  {
+    "interaction": "psr",
+    "iga": false,
+    "finite": true,
+    "bank": 256,
+    "active": 256
+  },
+  {
+    "interaction": "static_state",
+    "iga": true,
+    "finite": true,
+    "bank": 256,
+    "active": 173
+  }
+]

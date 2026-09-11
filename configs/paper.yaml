@@ -1,0 +1,72 @@
+# Explicit manuscript settings plus documented choices in docs/IMPLEMENTATION.md.
+seed: 42
+model:
+  dim: 512
+  depth: 8
+  heads: 8
+  patch_size: 16
+  state_dim: 512
+  subspaces: 8
+  r_min: 2
+  mlp_ratio: 4
+  memory_decay: 0.9
+  g_min_early: 0.05
+  g_min_late: 0.15
+  rank_phase_shift: 0.15
+  rank_sharpness: 12.0
+  query_threshold: 0.5
+  query_phase_shift: 0.15
+  query_sharpness: 12.0
+  phase_enabled: true
+  amplitude_enabled: true
+  subspace_enabled: true
+  query_enabled: true
+  interaction: psr
+  compact_scan: true
+  gradient_checkpointing: true
+  anchor_size: 512
+  decoder_dim: 64
+  k_max: 4
+  iga_enabled: true
+  gate_temperature: 0.5
+  hard_threshold: 0.5
+  scene_bound: 1.0
+  center_offset: 0.3
+  scale_min: 0.001
+  scale_max: 0.10
+  initial_kappa: 0.001
+diffusion:
+  timesteps: 1000
+  schedule: cosine
+renderer:
+  backend: cuda
+  ray_chunk: 256
+  gaussian_chunk: 256
+  checkpoint: true
+data:
+  manifest: data/manifest.json
+  image_size: 256
+  projection_scale: 1.0
+train:
+  steps: 80000
+  batch_size: 1
+  accumulation: 4
+  lr: 0.00002
+  weight_decay: 0.05
+  warmup: 5000
+  amp: true
+  workers: 4
+  cpu_threads: 4
+  grad_clip: 1.0
+  log_every: 20
+  save_every: 1000
+loss:
+  den: 1.0
+  novel: 1.0
+  ssim: 0.2
+  iga: 0.1
+  budget: 0.02
+  rho_g: 0.6
+  data_range: 1.0
+inference:
+  steps: 20

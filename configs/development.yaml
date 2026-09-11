@@ -1,0 +1,18 @@
+_base_: paper.yaml
+model:
+  dim: 128
+  depth: 4
+  heads: 4
+  state_dim: 128
+  anchor_size: 32
+  decoder_dim: 32
+  initial_kappa: 0.02
+data:
+  image_size: 64
+renderer:
+  backend: reference
+train:
+  workers: 0
+  amp: false
+  steps: 2000
+  warmup: 100

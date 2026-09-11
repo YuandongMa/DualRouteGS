@@ -1,0 +1,4 @@
+_base_: ../paper.yaml
+model:
+  interaction: attention
+  iga_enabled: false

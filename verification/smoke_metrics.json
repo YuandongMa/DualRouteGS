@@ -1,0 +1,89 @@
+{
+  "rows": [
+    {
+      "id": "phantom_test",
+      "group_id": "phantom_test",
+      "domain": "synthetic_phantom",
+      "time_seconds": 0.04911996000009822,
+      "peak_gpu_gib": null,
+      "active_gaussians": 150,
+      "views": 5,
+      "psnr": 22.56808395385742,
+      "ssim": 0.008314539398998021,
+      "rmse": 0.07446782439947128,
+      "volume_psnr": 21.94019005685915,
+      "volume_ssim3d": 0.5512995485704776,
+      "volume_rmse": 0.07998167539415556
+    }
+  ],
+  "summary": {
+    "time_seconds": {
+      "mean": 0.04911996000009822,
+      "ci95": [
+        0.04911996000009822,
+        0.04911996000009822
+      ],
+      "n": 1
+    },
+    "active_gaussians": {
+      "mean": 150.0,
+      "ci95": [
+        150.0,
+        150.0
+      ],
+      "n": 1
+    },
+    "psnr": {
+      "mean": 22.56808395385742,
+      "ci95": [
+        22.56808395385742,
+        22.56808395385742
+      ],
+      "n": 1
+    },
+    "ssim": {
+      "mean": 0.008314539398998021,
+      "ci95": [
+        0.008314539398998021,
+        0.008314539398998021
+      ],
+      "n": 1
+    },
+    "rmse": {
+      "mean": 0.07446782439947128,
+      "ci95": [
+        0.07446782439947128,
+        0.07446782439947128
+      ],
+      "n": 1
+    },
+    "volume_psnr": {
+      "mean": 21.94019005685915,
+      "ci95": [
+        21.94019005685915,
+        21.94019005685915
+      ],
+      "n": 1
+    },
+    "volume_ssim3d": {
+      "mean": 0.5512995485704776,
+      "ci95": [
+        0.5512995485704776,
+        0.5512995485704776
+      ],
+      "n": 1
+    },
+    "volume_rmse": {
+      "mean": 0.07998167539415556,
+      "ci95": [
+        0.07998167539415556,
+        0.07998167539415556
+      ],
+      "n": 1
+    }
+  },
+  "timing_scope": "DDIM including Gaussian decoding, hard routing and canonical rendering; excludes data loading and held-out metric rendering",
+  "backend": "reference",
+  "parameters": 57935,
+  "seed": 0
+}

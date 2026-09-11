@@ -1,0 +1,3 @@
+_base_: ../paper.yaml
+model:
+  iga_enabled: false

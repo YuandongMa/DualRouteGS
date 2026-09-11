@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "projections_unchanged": true,
+  "physical_attenuation_scale_preserved": true,
+  "condition_count": 1,
+  "held_out_views": 5
+}

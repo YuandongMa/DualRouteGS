@@ -1,0 +1,24 @@
+test_affine_scan_matches_sequential_and_gradients (test_core.CoreContracts.test_affine_scan_matches_sequential_and_gradients) ... ok
+test_all_inactive_compact_scan (test_core.CoreContracts.test_all_inactive_compact_scan) ... ok
+test_compact_scan_preserves_inactive_state_and_order (test_core.CoreContracts.test_compact_scan_preserves_inactive_state_and_order) ... ok
+test_ddim_formula_and_terminal_boundary (test_core.CoreContracts.test_ddim_formula_and_terminal_boundary) ... ok
+test_dense_training_forward_matches_sparse_inference (test_core.CoreContracts.test_dense_training_forward_matches_sparse_inference) ... ok
+test_empty_query_route_is_identity (test_core.CoreContracts.test_empty_query_route_is_identity) ... ok
+test_full_training_step_has_finite_psr_and_iga_gradients (test_core.CoreContracts.test_full_training_step_has_finite_psr_and_iga_gradients) ... ok
+test_gate_gradient_with_zero_forward_attenuation (test_core.CoreContracts.test_gate_gradient_with_zero_forward_attenuation) ... ok
+test_gradient_checkpointing_path (test_core.CoreContracts.test_gradient_checkpointing_path) ... ok
+test_integrator_gradcheck (test_core.CoreContracts.test_integrator_gradcheck) ... ok
+test_monotonic_phase_reliability (test_core.CoreContracts.test_monotonic_phase_reliability) ... ok
+test_nested_allocation_and_minimum_capacity (test_core.CoreContracts.test_nested_allocation_and_minimum_capacity) ... ok
+test_patient_leakage_is_rejected (test_core.CoreContracts.test_patient_leakage_is_rejected) ... ok
+test_radiative_linearity (test_core.CoreContracts.test_radiative_linearity) ... ok
+test_reference_ray_matches_analytic_isotropic_gaussian (test_core.CoreContracts.test_reference_ray_matches_analytic_isotropic_gaussian) ... ok
+test_sampling_is_repeatable_and_resets_memory (test_core.CoreContracts.test_sampling_is_repeatable_and_resets_memory) ... ok
+test_small_central_gaussian_reference_agreement (test_cuda.CudaContracts.test_small_central_gaussian_reference_agreement) ... skipped 'CUDA hardware unavailable'
+test_voxelization_xyz_and_support (test_cuda.CudaContracts.test_voxelization_xyz_and_support) ... skipped 'CUDA hardware unavailable'
+test_zero_density_gate_gradient (test_cuda.CudaContracts.test_zero_density_gate_gradient) ... skipped 'CUDA hardware unavailable'
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.178s
+
+OK (skipped=3)
