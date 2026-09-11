@@ -4,7 +4,6 @@
 
 A trainable research implementation based on the supplied DualRouteGS manuscript. The network, modules, configurations, and execution interfaces use the DualRouteGS name and are organized around **PSR + IGA**. The input is **one calibrated scalar X-ray transmission projection and its acquisition geometry**. The output is a three-dimensional Gaussian attenuation field in global coordinates, which supports novel-view projection rendering and volume reconstruction.
 
-This codebase was developed from the manuscript and public implementations. **It is not the authors' original experimental repository and does not include manuscript-trained weights or reproduced benchmark results.** Equations, gradients, and the complete data workflow have been checked on CPU. CUDA source code and adapters are included, but they have not been compiled or tested in the current environment because no GPU was available. See the [verification report](verification/REPORT.md) for the actual validation record.
 
 ## 1. Components and Entry Points
 
